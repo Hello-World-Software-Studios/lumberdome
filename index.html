@@ -3,8 +3,15 @@
 
 <head>
     <title>Welcome to Thunderdome</title>
-    <script src="main/ui"></script>
-    <link href="index.css" type="text/css"
+
+    <style type="text/css">
+    body {background-color: black;
+        color:chartreuse;
+        font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;}
+    canvas {border: 5px solid chartreuse;
+        background-color: darkgreen;}
+    </style>
+
 </head>
 
 <body>
@@ -13,6 +20,11 @@
         Win battles to earn prizes that can help you rise in the rankings, and claim the title 
         of Champion of the Thunderdome!
     </p>
+    
+    <canvas>
+        <script src="main/ui.js"></script>
+    </canvas>
+
     <button>Play</button>
 </body>
 <footer>
