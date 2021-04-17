@@ -3,3 +3,18 @@ body {
     background-color: black;
     color: chartreuse;
 }
+canvas {
+    border: 5px outset chartreuse;
+    background-color: darkgreen;
+}
+.navbar {
+    border: 5px outset red;
+    background-color: rgb(2, 45, 59);
+    text-align: center;
+    display: table;
+}
+div {
+    border: 5px outset chartreuse;
+    background-color: black;
+    text-align: center;
+}
