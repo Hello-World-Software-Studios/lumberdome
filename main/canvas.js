@@ -3,21 +3,15 @@
 var canvas = document.querySelector('canvas');
 
 var img = new Image();
-<<<<<<< HEAD
 img.src = 'data/bgs/bark0.jpg';
-=======
-img.src = 'data/bgs/bg6x8.png';
->>>>>>> faed2459c13dbd45c50d1eafb310fbdda185145f
+
 
 var music = new Audio();
 music.src = 'data/sounds/slowforest.mp3';
 
 canvas.width = window.innerWidth*0.8;
-<<<<<<< HEAD
 canvas.height = window.innerHeight*.8;
-=======
 canvas.height = window.innerHeight/2+1;
->>>>>>> faed2459c13dbd45c50d1eafb310fbdda185145f
 const HALFW = canvas.width/2;
 const HALFH = canvas.height/2;
 
