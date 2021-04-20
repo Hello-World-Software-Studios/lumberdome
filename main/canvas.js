@@ -32,6 +32,7 @@ function oops(){
     c.fillText('Oops, something went horribly wrong.', HALFW-250, HALFH+50);
 }
 oops();
+
 function musicFunc(){
     if (isPlaying(music) == true){
         music.pause();
@@ -39,6 +40,6 @@ function musicFunc(){
     else music.play();
 }
 onmousedown = musicFunc();
-
+c.drawImage('data/bgs/D2CVQg.jpg', 0, 0);
 
 
