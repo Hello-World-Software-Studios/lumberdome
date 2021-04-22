@@ -11,5 +11,3 @@ function MapSquare(){
     this.riskReward = this.riskReward; //String
     
 }
-
-function ()

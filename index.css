@@ -1,27 +1,60 @@
 body {
-    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-    background-image: url('data/bgs/bark0.jpg');
-    background-repeat: no-repeat;
+    font-family: 'Arial';
+    background: rgb(2,0,36);
+    border: black;
+    padding: 10px;
+    margin: 10px;
+    background: linear-gradient(135deg, blue 0%, blue 75%, brown 100%);
     background-size: 100% 100%;
-    color: chartreuse;
+    color: grey;
 }
-.welcomeCanvas {
-    border: 5px outset chartreuse;
-    background-color: darkgreen;
+
+.pageTop{
+    border: lightcyan;
+    padding: 10px;
+    margin: 10px;
+    background-color: lightcyan;
+    color: black;
+    text-align: center;
+    
+}
+
+.banner{
+    border: lightcyan;
+    padding: 10px;
+    margin: 10px;
+    background-color: lightcyan;
+    color: black
+}
+.logo{
+    background-image: url('data/Lumberdome.png');
+    background-size: 100%;
+    width: 300px;
+    height: 100px;
 }
 .navbar {
-    border: 5px outset red;
-    background-color: rgb(2, 45, 59);
     text-align: center;
-    display: table;  
+    display: table-row;
 }
+
 .h1bar {
-    border: 5px outset darkgreen;
-    background-color: black;
+    border: inherit;
+    background-color: inherit;
     text-align: center;   
 }
 div {
-    border: 5px outset chartreuse;
-    background-color: black;
+    padding: inherit;
+    border: inherit;
+    background-color: inherit;
     text-align: center;
+}
+
+.welcomeCanvas {
+    border: 5px 'black';
+    padding: 10px;
+    background-color: darkgreen;
+}
+
+footer {
+    color: white;
 }

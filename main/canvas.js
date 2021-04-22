@@ -16,6 +16,47 @@ const HALFH = canvas.height/2;
 
 var c = canvas.getContext('2d');
 
+//helper for mousevent
+function musicFunc(){
+    if (isPlaying(music) == true){
+        music.pause();
+    }
+    else music.play();
+}
+
+// Event Listeners
+
+/*addEventListener('mousemove', (event) => {
+    mouse.x = event.clientX
+    mouse.y = event.clientY
+  })*/
+
+  addEventListener('mouseover', (event) => {
+    mouse.x = event.clientX
+    mouse.y = event.clientY
+  })
+
+//produce a rectangle that follows mouse and displays information
+function ToolTip(x, y, long, tall){
+    this.x = x;
+    this.y = y;
+    this.long = long;
+    this.tall = tall;
+    c.fillStyle('white');
+    c.fillRect(x, y, long, tall);
+    c.font = '14px Arial';
+    c.fillText('Oops, something went horribly wrong.', x, y);
+    
+}
+
+// Animation Loop
+function animate() {
+    requestAnimationFrame(animate);
+    c.clearRect(0, 0, canvas.width, canvas.height);
+    c.onmouseover(face) = ToolTip(clientX, clientY, 50, 100);
+}
+
+//simple face with 3 rectangles
 function face(){
     c.fillRect(HALFW-50, HALFH-100, 50, 60);
     c.fillRect(HALFW+50, HALFH-100, 50, 60);
@@ -26,20 +67,11 @@ function face(){
     c.lineWidth = 10;
     c.stroke();
 }
+
+//display face and error message
 function oops(){
     face();
     c.font = '30px Arial';
     c.fillText('Oops, something went horribly wrong.', HALFW-250, HALFH+50);
 }
 oops();
-
-function musicFunc(){
-    if (isPlaying(music) == true){
-        music.pause();
-    }
-    else music.play();
-}
-onmousedown = musicFunc();
-c.drawImage('data/bgs/D2CVQg.jpg', 0, 0);
-
-
