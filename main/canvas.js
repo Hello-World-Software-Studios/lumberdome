@@ -16,7 +16,7 @@ const HALFH = canvas.height/2;
 
 var c = canvas.getContext('2d');
 
-//helper for mousevent
+//starts or stops music
 function musicFunc(){
     if (isPlaying(music) == true){
         music.pause();
@@ -25,16 +25,10 @@ function musicFunc(){
 }
 
 // Event Listeners
-
-/*addEventListener('mousemove', (event) => {
-    mouse.x = event.clientX
-    mouse.y = event.clientY
-  })*/
-
-  addEventListener('mouseover', (event) => {
-    mouse.x = event.clientX
-    mouse.y = event.clientY
-  })
+addEventListener('mouseover', (event) => {
+    mouse.x = event.clientX;
+    mouse.y = event.clientY;
+})
 
 //produce a rectangle that follows mouse and displays information
 function ToolTip(x, y, long, tall){
@@ -53,7 +47,7 @@ function ToolTip(x, y, long, tall){
 function animate() {
     requestAnimationFrame(animate);
     c.clearRect(0, 0, canvas.width, canvas.height);
-    c.onmouseover(face) = ToolTip(clientX, clientY, 50, 100);
+    c.onmouseover(canvas) = ToolTip(clientX, clientY, 50, 100);
 }
 
 //simple face with 3 rectangles
@@ -75,3 +69,4 @@ function oops(){
     c.fillText('Oops, something went horribly wrong.', HALFW-250, HALFH+50);
 }
 oops();
+onmousedown(canvas) = musicFunc();
