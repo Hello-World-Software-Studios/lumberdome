@@ -1,5 +1,4 @@
 
-
 var canvas = document.querySelector('canvas');
 
 var img = new Image();
@@ -39,7 +38,7 @@ function ToolTip(x, y, long, tall){
     c.fillStyle('white');
     c.fillRect(x, y, long, tall);
     c.font = '14px Arial';
-    c.fillText('Oops, something went horribly wrong.', x, y);
+    c.fillText('Tooltip Information', x, y);
     
 }
 
@@ -69,4 +68,3 @@ function oops(){
     c.fillText('Oops, something went horribly wrong.', HALFW-250, HALFH+50);
 }
 oops();
-onmousedown(canvas) = musicFunc();
