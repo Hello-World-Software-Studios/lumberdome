@@ -11,6 +11,19 @@ img.src = 'data/bgs/D2CVQg.jpg';
 //     music.play();
 // });
 
+// Mouse Event Listeners
+var mouse = {
+    x: undefined,
+    y: undefined
+}
+
+window.addEventListener('mousemove', 
+    function(event){
+        mouse.x = event.x;
+        mouse.y = event.y;
+        //console.log(event);
+    }
+)
 
 canvas.width = 800;
 canvas.height = 600;
@@ -22,20 +35,6 @@ var c = canvas.getContext('2d');
 //////////////////////////////////////////////////////////////////////////////////////
 //Canvas
 
-// Mouse Event Listeners
-window.addEventListener('mousemove', 
-    function(event){
-        mouse.x = event.x;
-        mouse.y = event.y;
-        //console.log(event);
-    }
-)
-var mouse = {
-    x: undefined,
-    y: undefined
-}
-
-
 //produce a rectangle that follows mouse and displays information
 function ToolTip(x, y, long, tall){
     this.x = x;
@@ -45,17 +44,28 @@ function ToolTip(x, y, long, tall){
     c.fillStyle = 'white';
     c.fillRect(x, y, long, tall);
     c.font = '14px Arial';
-    c.fillText('Tooltip Information', x, y);
+    c.fillStyle = 'black';
+    c.fillText(tpHelper(), x+5, y+25);
     
 }
+//tooltip helper
+function tpHelper(){
+    if (mouse.x > window.innerWidth/2) {
+        return 'East';
+    }
+    else {
+        return 'West';
+    }
+}
+
 
 // Animation Loop
 function animate() {
     requestAnimationFrame(animate);
     c.clearRect(0, 0, canvas.width, canvas.height);
     c.drawImage(img, 0, 0,);
-    c.drawImage(ToolTip(mouse.x, mouse.y, 50, 100), 0, 0);
-    console.log(ToolTip.x);
+    ToolTip(mouse.x-100, mouse.y+20, 150, 50);
+    console.log(mouse.x);
 }
 
 
@@ -75,6 +85,7 @@ function main(){
     //init player
     var player = new Player();
 
+    animate();
 
 }
 

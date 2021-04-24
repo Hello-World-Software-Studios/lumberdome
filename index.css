@@ -58,7 +58,8 @@ div {
 .Lumberdome {
     border: 5px 'black';
     padding: 10px;
-    background-color: darkgreen;
+    background-color: rgb(0, 50, 0);
+    align-self: left;
 }
 .startButton {
     border: 5px 'black';
