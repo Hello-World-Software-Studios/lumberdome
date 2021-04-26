@@ -1,8 +1,5 @@
 body {
     font-family: 'Arial';
-    border: black;
-    padding: 10px;
-    margin: 10px;
     background: linear-gradient(135deg, blue 0%, blue 75%, brown 100%);
     background-size: 100% 100%;
     color: grey;
@@ -33,11 +30,7 @@ body {
     height: 100px;
     align-self: center;
 }
-.class{
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-}
+
 .navbar {
     text-align: center;
     display: table-row;
@@ -48,21 +41,13 @@ body {
     background-color: inherit;
     text-align: center;   
 }
-div {
-    padding: inherit;
-    border: inherit;
-    background-color: inherit;
-    text-align: center;
-}
 
 .Lumberdome {
-    border: 5px 'black';
-    padding: 10px;
     background-color: rgb(0, 50, 0);
-    align-self: left;
+    border: 5px solid black;
 }
 .startButton {
-    border: 5px 'black';
+    border: 5px black;
     background-color: white;
     color: black;
     width: 120;

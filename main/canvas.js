@@ -27,9 +27,11 @@ window.addEventListener('mousemove',
 
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
+const CW = canvas.width;
+const CH = canvas.height;
 const HALFW = canvas.width/2;
 const HALFH = canvas.height/2;
-
+const PXOFFSET = 10;
 var c = canvas.getContext('2d');
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -45,12 +47,12 @@ function ToolTip(x, y, long, tall){
     c.fillRect(x, y, long, tall);
     c.font = '14px Arial';
     c.fillStyle = 'black';
-    c.fillText(tpHelper(), x+5, y+25);
+    c.fillText('X' + mouse.x + ',    Y' + mouse.y, x+5, y+25);
     
 }
-//tooltip helper
+//tooltip filltext helper
 function tpHelper(){
-    if (mouse.x > window.innerWidth/2) {
+    if (mouse.x > canvas.width*0.4) {
         return 'East';
     }
     else {
@@ -64,25 +66,47 @@ function CDRect(){
     this.y = y;
     this.long = long;
     this.tall = tall;
+    this.time = startClock(now);
     c.fillStyle = 'white';
     c.fillRect(x, y, long, tall);
     c.font = '14px Arial';
     c.fillStyle = 'black';
-    c.fillText(startClock.now, x+5, y+25);
+    c.fillText(time, x+5, y+25);
 }
+//temporary
+function tempHelp(){
+    c.beginPath();
+    c.moveTo(HALFW, 0);
+    c.lineTo(HALFW, canvas.height);
+    c.strokeStyle = 'black';
+    c.stroke();
 
+    c.beginPath();
+    c.moveTo(0, HALFH);
+    c.lineTo(canvas.width, HALFH);
+    c.strokeStyle = 'black';
+    c.stroke();
+    
+
+}
+//Countdown Bar
+function countDownBar(){
+    c.fillStyle = 'white';
+    c.fillRect(0, CH*0.8, CW*0.2, CH*0.2);
+    c.font = '14px Arial';
+    c.fillStyle = 'black';
+    c.fillText('Time until starvation', CW*0.01, CH*0.9);
+}
 // Animation Loop
 function animate() {
     requestAnimationFrame(animate);
     c.clearRect(0, 0, canvas.width, canvas.height);
-    c.drawImage(img, 0, 0,);
+    c.drawImage(img, 0, 0, canvas.width*0.8, canvas.height*0.8);
+    countDownBar();
+    tempHelp();
     ToolTip(mouse.x-100, mouse.y+20, 150, 50);
-    main();
-    console.log();
+    console.log('nothing');
 }
-
-
-animate();
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Game Script
@@ -99,8 +123,10 @@ function main(){
     //}
 
     //init player
-    //var player = new Player();
+    var player = new Player(40.00, 0, 0, 100);
+    //init clock
     startClock();
+    
 }
 
 
@@ -112,6 +138,7 @@ function musicFunc(){
     else music.play();
 }
 
+//Create a clock counting down from predefined player hunger property
 function startClock(){
     var endTime = 0.00;
     var clock = new setInterval(function() {
@@ -140,33 +167,23 @@ function intervalRate(){
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 //Player Script
-var Player = {
-
+function Player(hunger, sticks, logs, axe) {
     //point of control for countdown init
-    hunger: 40.00,
-    
+    this.hunger = hunger;
     //player resources
-    sticks: 0,
-    logs: 0,
-    axe: 100,
+    this.sticks = sticks; //positive integer or 0
+    this.logs = logs; //positive integer or 0
+    this.axe = axe //number from 0 to 100
 
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-//Map Script
-function WorldMap(){
-    this.x = x; //map X value
-    this.y = y; //map Y value
-    this.imageSource = imageSource; //string
-}
-//each map square will contain a biome name, an amount of resources, maybe random event?
-function MapSquare(){
-    this.biome = biome; //String
-    this.stickRange = stickRange; //integer [0, i]
-    this.logRange = logRange; //integer [0, j]
-    this.riskReward = this.riskReward; //String
-    
-}
+animate();
+main();
+
+
+
+
+
 
 ///////////////////////////////////////////////
 //error function
