@@ -1,4 +1,5 @@
-//////////////////////////////////////////////////////////////////////////////////////
+//import Player from './player.js';
+
 //Variables and Data Definitions
 var canvas = document.querySelector('canvas');
 var c = canvas.getContext('2d');
@@ -30,8 +31,7 @@ var rain = false;
 var shelter = false;
 var campfire = false;
 
-//////////////////////////////////////////////////////////////////////////////////////
-//Canvas
+
 
 // Mouse Event Listeners
 var mouse = {
@@ -45,6 +45,56 @@ window.addEventListener('mousemove',
         mouse.y = event.y;
     }
 )
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//Game Script
+function main(){
+
+    var player = new Player(40.00, 0, 0, 100);
+    var clock = startClock(); 
+    //TODO
+    // make an area that, when clicked, can add to player.sticks
+    
+
+
+    //TODO
+    //make this a helper
+    //if (rain == true && campfire == true && shelter == false){
+    //    campfire = false;
+    //}
+    animate(clock);
+    console.log(player.hunger);
+    console.log(clock);
+    
+}
+/////////////////////////////////////////////////////////////
+//Player Script
+
+function Player(hunger, sticks, logs, axe) {
+    //point of control for countdown init
+    this.hunger = hunger;
+    //player resources
+    this.sticks = sticks; //positive integer or 0
+    this.logs = logs; //positive integer or 0
+    this.axe = axe //number from 0 to 100
+
+}
+
+//////////////////////////////////////////////////////////////////////////////////////
+//Canvas
+// Animation Loop
+function animate(time) {
+    requestAnimationFrame(animate);
+    c.clearRect(0, 0, canvas.width, canvas.height);
+    c.drawImage(bg, 0, 0, canvas.width*0.8, canvas.height*0.8);
+    //c.drawImage(cf, 0, 200, SPRITE_W, SPRITE_H, HALFW, HALFH, SPRITE_W, SPRITE_H);
+    UI();
+    ToolTip(mouse.x-100, mouse.y+20, 150, 50);
+    textMsg(time, '30px Arial', 'black', CW*0.2, CH*0.9);
+    textMsg('80.00 days', '30px Arial', 'black', CW*0.6, CH*0.9);
+    console.log(time);
+}
+
 //produce a rectangle that follows mouse and displays information
 function ToolTip(x, y, long, tall){
     this.x = x;
@@ -68,73 +118,64 @@ function tpHelper(){
     }
 }
 
-//display countdown clock
-function CDRect(x, y, long, tall){
-    this.x = x;
-    this.y = y;
-    this.long = long;
-    this.tall = tall;
-    startClock();
-    this.time = startClock(now);
-    c.fillStyle = 'yellow';
-    c.fillRect(x, y, long, tall);
-    c.font = '14px Arial';
-    c.fillStyle = 'black';
-    c.fillText(time, x+5, y+25);
+function UI() {
+    // var rescueBar = new UIBar('grey', 'Days until rescue: ', 
+    //                             CW*0.41, CH*0.9, 
+    //                             CW*0.4, CH*0.8, CW*0.4, CH*0.2);
+    // var starvationBar = new UIBar('palegreen', 'Time until starvation: ',
+    //                                 CW*0.01, CH*0.9,
+    //                                 0, CH*0.8, CW*0.4, CH*0.2);
+    rescueBar();
+    StarvationBar('palegreen', 'Time until starvation: ');
+    quadrantLines();
+    inventoryBar();
+
 }
 
-//temporary
-function tempHelp(){
+//UI Window object
+function UIBar(color, textA, tx, ty, fXa, fYa, fXb, fYb){
+    this.color = color;
+    this.textA = textA;
+    c.fillStyle = color;
+    c.fillRect(fXa, fYa, fXb, fYb);
+    textMsg(textA, '24px Arial', 'black', tx, ty);
+    console.log(text);
+}
+//starvation Bar
+function StarvationBar(color, text){
+    this.color = color;
+    this.text = text;
+    c.fillStyle = color;
+    c.fillRect(0, CH*0.8, CW*0.4, CH*0.2);
+    textMsg(text, '24px Arial', 'black', CW*0.01, CH*0.9);
+    
+    console.log(text);
+}
+//Rescue bar
+function rescueBar(color, text){
+    c.fillStyle = 'grey';
+    c.fillRect(CW*0.4, CH*0.8, CW*0.4, CH*0.2);
+    textMsg('Days until rescue:', '24px Arial', 'black', CW*0.41, CH*0.9);
+}
+//crafting panel
+function inventoryBar(){
+    c.fillStyle = 'lightsteelblue';
+    c.fillRect(CW*0.8, 0, CW, CH);
+    textMsg('Crafting Pane', '24px Arial', 'black', CW*0.85, CH*0.2);
+}
+//create a grid on top of map
+function quadrantLines(){
     c.beginPath();
     c.moveTo(CW*0.4, 0);
-    c.lineTo(CW*0.4, canvas.height);
+    c.lineTo(CW*0.4, CH*0.8);
     c.strokeStyle = 'black';
     c.stroke();
 
     c.beginPath();
     c.moveTo(0, CW*0.2);
-    c.lineTo(canvas.width, CW*0.2);
+    c.lineTo(CW*0.8, CW*0.2);
     c.strokeStyle = 'black';
     c.stroke();
-    
-
-}
-//Countdown Bar
-function countDownBar(){
-    c.fillStyle = 'white';
-    c.fillRect(0, CH*0.8, CW*0.4, CH*0.2);
-    c.font = '14px Arial';
-    c.fillStyle = 'black';
-    c.fillText('Time until starvation:', CW*0.01, CH*0.9);
-}
-// Animation Loop
-function animate() {
-    requestAnimationFrame(animate);
-    c.clearRect(0, 0, canvas.width, canvas.height);
-    c.drawImage(bg, 0, 0, canvas.width*0.8, canvas.height*0.8);
-    //c.drawImage(cf, 0, 200, SPRITE_W, SPRITE_H, HALFW, HALFH, SPRITE_W, SPRITE_H);
-    countDownBar();
-    tempHelp();
-    ToolTip(mouse.x-100, mouse.y+20, 150, 50);
-    c.font = '14px Arial';
-    c.fillStyle = 'black';
-    c.fillText(CDRect.time, CW*0.15, CH*0.9);
-    console.log('nothing');
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//Game Script
-function main(){
-        
-    //TODO
-    //make this a helper
-    //if (rain == true && campfire == true && shelter == false){
-    //    campfire = false;
-    //}
-
-    //init player
-    var player = new Player(40.00, 0, 0, 100);
-    startClock();
 }
 
 //starts or stops music
@@ -145,11 +186,15 @@ function musicFunc(){
     else music.play();
 }
 
-//Create a clock counting down from predefined player hunger property
+//TODO
+//get a working clock that counts down at varying speeds
+
+//Create a clock counting down from set value
 function startClock(){
     var endTime = 0.00;
-    var clock = new setInterval(function() {
-        var now = 40.00;
+    var now = 40.00;
+    setInterval(function() {
+        
         if (now > endTime){
             return now - 0.01;
         }
@@ -157,6 +202,8 @@ function startClock(){
         }
     
     }, intervalRate()); 
+
+    return now;
 }
 
 function intervalRate(){
@@ -174,23 +221,41 @@ function intervalRate(){
     return interval;
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-//Player Script
-function Player(hunger, sticks, logs, axe) {
-    //point of control for countdown init
-    this.hunger = hunger;
-    //player resources
-    this.sticks = sticks; //positive integer or 0
-    this.logs = logs; //positive integer or 0
-    this.axe = axe //number from 0 to 100
-
+//display countdown clock
+function CDRect(x, y, long, tall){
+    this.x = x;
+    this.y = y;
+    this.long = long;
+    this.tall = tall;
+    //
+    this.time = clock;
+    c.fillStyle = 'yellow';
+    c.fillRect(x, y, long, tall);
+    c.font = '14px Arial';
+    c.fillStyle = 'black';
+    c.fillText(this.time, x+5, y+25);
+    console.log(this.time);
 }
 
-animate();
+
+
+//animate();
 main();
 
+///////////////////////////////////////
+//abstractions
 
-
+//text message. takes in font size, 
+function textMsg(text, fontMsg, textColor, textX, textY){
+    this.text = text; //string or something that returns a string
+    this.fontMsg = fontMsg; //follow rules for canvas.font ex. '30px Arial'
+    this.textX = textX;
+    this.textY = textY;
+    this.textColor = textColor; //fillstyle parameter
+    c.font = fontMsg;
+    c.fillStyle = textColor;
+    c.fillText(text, textX, textY);
+}
 
 
 
