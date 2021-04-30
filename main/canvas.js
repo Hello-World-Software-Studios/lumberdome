@@ -38,7 +38,6 @@ var mouse = {
     x: undefined,
     y: undefined
 }
-
 window.addEventListener('mousemove', 
     function(event){
         mouse.x = event.x;
@@ -51,20 +50,18 @@ window.addEventListener('mousemove',
 function main(){
 
     var player = new Player(40.00, 0, 0, 100);
-    var clock = startClock(); 
+    var hungerClock = new StartClock(player.hunger, intervalRate());
+    var rescueClock = new StartClock(80.00, 50); 
     //TODO
     // make an area that, when clicked, can add to player.sticks
-    
-
-
     //TODO
     //make this a helper
     //if (rain == true && campfire == true && shelter == false){
     //    campfire = false;
     //}
-    animate(clock);
-    console.log(player.hunger);
-    console.log(clock);
+    animate(hungerClock, rescueClock, player);
+    console.log(hungerClock);
+    console.log(rescueClock);
     
 }
 /////////////////////////////////////////////////////////////
@@ -83,16 +80,26 @@ function Player(hunger, sticks, logs, axe) {
 //////////////////////////////////////////////////////////////////////////////////////
 //Canvas
 // Animation Loop
-function animate(time) {
-    requestAnimationFrame(animate);
-    c.clearRect(0, 0, canvas.width, canvas.height);
-    c.drawImage(bg, 0, 0, canvas.width*0.8, canvas.height*0.8);
-    //c.drawImage(cf, 0, 200, SPRITE_W, SPRITE_H, HALFW, HALFH, SPRITE_W, SPRITE_H);
-    UI();
-    ToolTip(mouse.x-100, mouse.y+20, 150, 50);
-    textMsg(time, '30px Arial', 'black', CW*0.2, CH*0.9);
-    textMsg('80.00 days', '30px Arial', 'black', CW*0.6, CH*0.9);
-    console.log(time);
+function animate(hunger, rescue, player) {
+    const terminationArg = 0;
+    if (hunger == terminationArg) {
+        gameOverScreen();
+    }
+    else if (rescue == terminationArg){
+        textMsg('Success!', '30px Arial', 'black', HALFW, HALFH);
+    }
+    else {
+        requestAnimationFrame(animate(hunger, rescue, player));
+        c.clearRect(0, 0, canvas.width, canvas.height);
+        c.drawImage(bg, 0, 0, canvas.width*0.8, canvas.height*0.8);
+        //c.drawImage(cf, 0, 200, SPRITE_W, SPRITE_H, HALFW, HALFH, SPRITE_W, SPRITE_H);
+        UI();
+        ToolTip(mouse.x-100, mouse.y+20, 150, 50);
+        textMsg(hunger.toString(), '30px Arial', 'black', CW*0.2, CH*0.9);
+        textMsg(rescue.toString() + ' days', '30px Arial', 'black', CW*0.6, CH*0.9);
+        textMsg(player.sticks, '30px Arial', 'black', CW*0.95, CH*0.3);
+        console.log(player.sticks);
+    }
 }
 
 //produce a rectangle that follows mouse and displays information
@@ -131,7 +138,7 @@ function UI() {
     inventoryBar();
 
 }
-
+//TODO Get this working 
 //UI Window object
 function UIBar(color, textA, tx, ty, fXa, fYa, fXb, fYb){
     this.color = color;
@@ -148,8 +155,6 @@ function StarvationBar(color, text){
     c.fillStyle = color;
     c.fillRect(0, CH*0.8, CW*0.4, CH*0.2);
     textMsg(text, '24px Arial', 'black', CW*0.01, CH*0.9);
-    
-    console.log(text);
 }
 //Rescue bar
 function rescueBar(color, text){
@@ -162,6 +167,7 @@ function inventoryBar(){
     c.fillStyle = 'lightsteelblue';
     c.fillRect(CW*0.8, 0, CW, CH);
     textMsg('Crafting Pane', '24px Arial', 'black', CW*0.85, CH*0.2);
+    textMsg('Sticks: ', '24px Arial', 'black', CW*0.85, CH*0.3)
 }
 //create a grid on top of map
 function quadrantLines(){
@@ -190,52 +196,58 @@ function musicFunc(){
 //get a working clock that counts down at varying speeds
 
 //Create a clock counting down from set value
-function startClock(){
+function StartClock(startTime, interval){
+    this.startTime = startTime; //positive number
+    this.interval = interval; //object must evaluate to number
     var endTime = 0.00;
-    var now = 40.00;
     setInterval(function() {
-        
+        var now = startTime;
         if (now > endTime){
             return now - 0.01;
         }
-        else { return 'Game Over';
+        else { 
+            return 'Game Over';
         }
     
-    }, intervalRate()); 
+    }, interval); 
 
-    return now;
 }
-
+//helper for StartClock
 function intervalRate(){
     var interval = 50;
 
-    if (rain == true){
-        interval + 25;
-    }
-    else if (campfire == true){
-        interval - 10;
-    }
-    else if (shelter == true){
-        interval - 15;
-    }
+    // if (rain == true){
+    //     interval + 25;
+    // }
+    // else if (campfire == true){
+    //     interval - 10;
+    // }
+    // else if (shelter == true){
+    //     interval - 15;
+    // }
     return interval;
 }
-
-//display countdown clock
-function CDRect(x, y, long, tall){
-    this.x = x;
-    this.y = y;
-    this.long = long;
-    this.tall = tall;
-    //
-    this.time = clock;
-    c.fillStyle = 'yellow';
-    c.fillRect(x, y, long, tall);
-    c.font = '14px Arial';
-    c.fillStyle = 'black';
-    c.fillText(this.time, x+5, y+25);
-    console.log(this.time);
+function gameOverScreen() {
+    c.clearRect(0, 0, canvas.width, canvas.height);
+    c.drawImage(bg, 0, 0, canvas.width*0.8, canvas.height*0.8);
+    textMsg('Game Over!', '72 px Arial', 'darkred', HALFW, HALFH);
 }
+
+// //display countdown clock
+// function CDRect(x, y, long, tall){
+//     this.x = x;
+//     this.y = y;
+//     this.long = long;
+//     this.tall = tall;
+//     //
+//     this.time = clock;
+//     c.fillStyle = 'yellow';
+//     c.fillRect(x, y, long, tall);
+//     c.font = '14px Arial';
+//     c.fillStyle = 'black';
+//     c.fillText(this.time, x+5, y+25);
+    
+// }
 
 
 
