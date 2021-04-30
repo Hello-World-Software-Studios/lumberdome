@@ -52,6 +52,8 @@ function main(){
     var player = new Player(40.00, 0, 0, 100);
     var hungerClock = new StartClock(player.hunger, intervalRate());
     var rescueClock = new StartClock(80.00, 50); 
+    console.log(hungerClock);
+    console.log(rescueClock);
     //TODO
     // make an area that, when clicked, can add to player.sticks
     //TODO
@@ -60,8 +62,7 @@ function main(){
     //    campfire = false;
     //}
     animate(hungerClock, rescueClock, player);
-    console.log(hungerClock);
-    console.log(rescueClock);
+    
     
 }
 /////////////////////////////////////////////////////////////
@@ -82,6 +83,7 @@ function Player(hunger, sticks, logs, axe) {
 // Animation Loop
 function animate(hunger, rescue, player) {
     const terminationArg = 0;
+    console.log(hunger);
     if (hunger == terminationArg) {
         gameOverScreen();
     }
@@ -95,10 +97,10 @@ function animate(hunger, rescue, player) {
         //c.drawImage(cf, 0, 200, SPRITE_W, SPRITE_H, HALFW, HALFH, SPRITE_W, SPRITE_H);
         UI();
         ToolTip(mouse.x-100, mouse.y+20, 150, 50);
-        textMsg(hunger.toString(), '30px Arial', 'black', CW*0.2, CH*0.9);
-        textMsg(rescue.toString() + ' days', '30px Arial', 'black', CW*0.6, CH*0.9);
+        textMsg(hunger, '30px Arial', 'black', CW*0.2, CH*0.9);
+        textMsg(rescue + ' days', '30px Arial', 'black', CW*0.6, CH*0.9);
         textMsg(player.sticks, '30px Arial', 'black', CW*0.95, CH*0.3);
-        console.log(player.sticks);
+        
     }
 }
 
