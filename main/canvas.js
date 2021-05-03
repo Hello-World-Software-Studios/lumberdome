@@ -1,5 +1,5 @@
 import { Player } from './player.js';
-import { CountDownTimer } from './timer.js';
+import { HealthBar } from './health_bar.js';
 
 //Variables and Data Definitions
 var canvas = document.querySelector('canvas');
@@ -48,15 +48,7 @@ window.addEventListener('mousemove',
     }
 )
 var player = new Player(18000, 0, 0, 100);
-var hungerClock = new CountDownTimer(player.hunger, 1000);
-//var rescueClock = new CountDownTimer(8000, 1000);
-
-//var clockWorklist;
-// var clock = new Date();
-// let seconds = Math.floor(Date.now() / 1000)
-// console.log(clock.getTime());
-// var now = clock.getTime();
-
+var hungerBar = new HealthBar(player.hunger, 1000);
 
 const STRTBTN = document.querySelector('startButton');
 let music = document.querySelector('#music');
@@ -68,7 +60,6 @@ addEventListener('click', (event)=> {
 //Game Script
 function main(){
     //console.log(clock.getTime());
-    console.log(hungerClock.startTime);
     console.log(player.sticks);
     // Update the count down every 1 second
 var x = setInterval(function() {
@@ -111,13 +102,7 @@ var x = setInterval(function() {
     //make this a helper
     //if (rain == true && campfire == true && shelter == false){
     //    campfire = false;
-    //}
-
-    // hungerClock.timer(hungerClock.startTime);
-    // rescueClock.timer(rescueClock.startTime);
-    // console.log(rescueClock.getNow());
-    // console.log(hungerClock.getRate());
-       
+    //}  
 }
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -126,6 +111,9 @@ var x = setInterval(function() {
 function animate() {
     if (expired == false) {
         var time = expTwo;
+        console.log(player.hunger);
+        player.hunger = hungerBar.tick(player.hunger);
+        console.log(player.hunger);
         c.clearRect(0, 0, canvas.width, canvas.height);
         c.drawImage(bg, 0, 0, canvas.width*0.8, canvas.height*0.8);
         //c.drawImage(cf, 0, 200, SPRITE_W, SPRITE_H, HALFW, HALFH, SPRITE_W, SPRITE_H);
