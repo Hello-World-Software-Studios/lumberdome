@@ -1,6 +1,6 @@
 import { Player } from './player.js';
 import { HealthBar } from './health_bar.js';
-
+//////////////////////////////////////////////////////
 //Variables and Data Definitions
 var canvas = document.querySelector('canvas');
 var c = canvas.getContext('2d');
@@ -33,6 +33,7 @@ var countDownDate = (Date.now() + fiveMinutes)
 //var countDownDate = new Date("Jan 5, 2022 15:37:25").getTime();
 var expired = false;
 var expTwo;
+var expiredMsg = 'Game Over'
 
 ////////////////////////////////////////////////////////////////
 
@@ -48,37 +49,31 @@ window.addEventListener('mousemove',
     }
 )
 var player = new Player(18000, 0, 0, 100);
-var hungerBar = new HealthBar(player.hunger, 1000);
+var initialHealth = player.hunger;
+var hungerBar = new HealthBar(player.hunger, 1);
 
 const STRTBTN = document.querySelector('startButton');
 let music = document.querySelector('#music');
 addEventListener('click', (event)=> {
-    main();
+    //main();
     //music.play();
 })
+main();
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Game Script
 function main(){
-    //console.log(clock.getTime());
-    console.log(player.sticks);
+    
     // Update the count down every 1 second
 var x = setInterval(function() {
-
     // Get today's date and time
     var now = new Date().getTime();
-  
     // Find the distance between now and the count down date
     var distance = countDownDate - now;
-    
     // Time calculations for days, hours, minutes and seconds
-    var days = Math.floor(distance / (1000 * 60 * 60 * 24));
-    var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    //var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    //var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
     var seconds = Math.floor((distance % (1000 * 60)) / 1000);
-  
-    // Display the result in the element with id="demo"
-    //t.getElementById("demo").innerHTML = days + "d " + hours + "h "
-    //+ minutes + "m " + seconds + "s ";documen
   
     if (digitCount(seconds) > 1) {
         expTwo = minutes + ":" + seconds;
@@ -86,7 +81,7 @@ var x = setInterval(function() {
     else {
         expTwo = minutes + ":0" + seconds;
     }
-    console.log(expTwo);
+    //console.log(expTwo);
   
     // If the count down is finished, write some text
     if (distance < 0) {
@@ -94,8 +89,13 @@ var x = setInterval(function() {
       expired = true;
     }
   }, 1000);
-    requestAnimationFrame(animate());
 
+    if (player.hunger > 0 && expired == false) {
+        animateA();
+    }
+    else {
+        animateB();
+    }
     //TODO
     // make an area that, when clicked, can add to player.sticks
     //TODO
@@ -108,28 +108,60 @@ var x = setInterval(function() {
 //////////////////////////////////////////////////////////////////////////////////////
 //Canvas
 // Animation Loop
-function animate() {
-    if (expired == false) {
-        var time = expTwo;
-        console.log(player.hunger);
+function animateA() {
+    //if (player.hunger > 0 && expired == false) {
         player.hunger = hungerBar.tick(player.hunger);
-        console.log(player.hunger);
+        //console.log(player.hunger);
+        healthBar(player.hunger);
         c.clearRect(0, 0, canvas.width, canvas.height);
         c.drawImage(bg, 0, 0, canvas.width*0.8, canvas.height*0.8);
         //c.drawImage(cf, 0, 200, SPRITE_W, SPRITE_H, HALFW, HALFH, SPRITE_W, SPRITE_H);
         //UI();
         toolTip(mouse.x-100, mouse.y+20, 150, 50);
-        textMsg(time, '30px Arial', 'black', CW*0.2, CH*0.9);
-        //TextMsg(rescueClock.getNow(), '30px Arial', 'black', CW*0.6, CH*0.9);
-        textMsg(player.sticks, '30px Arial', 'black', CW*0.95, CH*0.3);
+        //textMsg(expTwo, '30px Arial', 'black', CW*0.6, CH*0.9);
+        //textMsg(oneCent(player.hunger) + '/100', '30px Arial', 'black', CW*0.6, CH*0.9);
+        //textMsg(player.sticks, '30px Arial', 'black', CW*0.95, CH*0.3);
+        requestAnimationFrame(animateA());
         
-        
-    }
-    else {
-        console.log(expiredMsg);
-        gameOverScreen();
-    }
-    requestAnimationFrame(animate());
+    //}
+    //else {
+    //     //console.log(expiredMsg);
+    //     gameOverScreen();
+    //     toolTip(mouse.x-100, mouse.y+20, 150, 50);
+    //     requestAnimationFrame(animate());
+    // }
+    
+}
+function animateB() {
+    gameOverScreen();
+    toolTip(mouse.x-100, mouse.y+20, 150, 50);
+    requestAnimationFrame(animateB());
+}
+
+//health bar object
+function healthBar(healthRemaining) {
+
+    //outline
+    //TODO make strokeRect instead!
+    c.beginPath();
+    c.moveTo(5, CH*0.8);
+    c.lineTo(5, CH);
+    c.lineTo(CW*0.4, CH);
+    c.lineTo(CW*0.4, CH*0.8);
+    c.lineTo(0, CH*0.8);
+    c.strokeStyle = 'black';
+    c.lineWidth = 10;
+    c.stroke();
+
+    //inside
+    c.fillStyle = 'lightcoral'
+    c.fillRect(0, CH*0.8, (CW*0.4)*(healthRemaining/initialHealth), CH);
+}
+
+//converts health to int [0,100]
+function oneCent(x) {
+    parseInt((x/initialHealth)*100);
+    return x;
 }
 
 //produce a rectangle that follows mouse and displays information
@@ -158,7 +190,7 @@ function UI() {
     // var starvationBar = new UIBar('palegreen', 'Time until starvation: ',
     //                                 CW*0.01, CH*0.9,
     //                                 0, CH*0.8, CW*0.4, CH*0.2);
-    //rescueBar();
+    rescueBar();
     starvationBar('palegreen', 'Time until starvation: ');
     quadrantLines();
     inventoryBar();
@@ -221,8 +253,9 @@ function musicFunc(){
 function gameOverScreen() {
     c.clearRect(0, 0, canvas.width, canvas.height);
     c.drawImage(bg, 0, 0, canvas.width*0.8, canvas.height*0.8);
-    textMsg('Game Over!', '72 px Arial', 'darkred', HALFW, HALFH);
+    textMsg('Game Over!', '100 px Arial', 'darkred', HALFW, HALFH);
 }
+
 function digitCount(n) {
     var count = 0;
     if (n >= 1) ++count;

@@ -1,5 +1,3 @@
-import { Player } from './player.js';
-////////////////////////////////////////////////////////////////////////
 //Health bar class
 export class HealthBar {
     constructor(health, rate){
@@ -8,19 +6,19 @@ export class HealthBar {
     }
     tick(now){
         var endTime = 0;
-        this.now = this.health;    
-        if (this.now > endTime) {
-            this.now -= (1*this.rate);
-            return this.now;
+        //this.health = now;    
+        if (now > endTime) {
+            this.health -= (1*this.rate);
+            return this.health;
         }
         else {
-            this.now = 0;
-            return this.now;
-        }       
+            this.health = 0;
+            return this.health;
+        } 
     }   
     
     getNow() {
-        return this.now;
+        return this.health;
     }
     getRate() {
         return this.rate;
