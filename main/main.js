@@ -18,14 +18,16 @@ const HALFW = canvas.width/2;
 const HALFH = canvas.height/2;
 
 var fiveMinutes = 300000;
-var countDownDate = (Date.now() + fiveMinutes)
+var countDownDate = (Date.now() + fiveMinutes);
 var expired = false;
 var expTwo;
-var expiredMsg = 'Game Over'
+var expiredMsg = 'Game Over';
 
 var player = new Player(18000, 0, 0, 100);
 var initialHealth = player.hunger;
-var hungerBar = new HealthBar(player.hunger, 1);
+var hungerBar = new HealthBar(player.hunger, 2);
+
+var toolTipText = ' ';
 
 // Mouse Event Listeners
 var mouse = {
@@ -38,6 +40,15 @@ window.addEventListener('mousemove',
         mouse.y = event.y;
     }
 )
+window.addEventListener('click', addToInventory);
+
+function addToInventory() {
+    if (toolTipText = 'Gather Firewood') {
+        player.hunger *= 0.95;
+        player.sticks +=5;
+        console.log(player.sticks);
+    }
+}
 
 function main(){
     
@@ -59,7 +70,7 @@ function main(){
             expired = true;
         }
     }, 1000);
-
+    
     if (player.hunger > 0 && expired == false) {
         animateA();
     }
@@ -69,16 +80,16 @@ function main(){
 }
 
 main();
-
+////////////////////////////////
+//Animation Loop
 function animateA() {
-    player.hunger = hungerBar.tick(player.hunger);
+    player.hunger = hungerBar.tick(player.hunger, hungerBar.rate);
     c.clearRect(0, 0, canvas.width, canvas.height);
     c.drawImage(bg, 0, 0, canvas.width*0.8, canvas.height*0.8);
-    UI();
-    healthBar(player.hunger);
-    textMsg(oneCent(player.hunger) + '/100', '30px Arial', 'black', CW*0.2, CH*0.9);
-    textMsg(expTwo, '30px Arial', 'black', CW*0.6, CH*0.9);
-    toolTip(mouse.x-100, mouse.y+20, 150, 50);
+    UI(player.hunger, expTwo);
+    interactionFunction();
+    tTHelp();
+    toolTip(mouse.x-100, mouse.y+20, 150, 50, toolTipText);
     requestAnimationFrame(animateA);
 
 }
@@ -107,11 +118,24 @@ function digitCount(n) {
   
     return count;
 }
+
+function UI(health, time) {
+    rescueBar(time);
+    healthBar(health); 
+    quadrantLines();
+    inventoryBar();
+
+}
 //health bar object
 function healthBar(healthRemaining) {
     //inside
+    c.fillStyle = 'palegreen';
+    c.fillRect(0, CH*0.8, CW*0.4, CH*0.2);
     c.fillStyle = 'lightcoral'
     c.fillRect(0, CH*0.8, (CW*0.4)*(healthRemaining/initialHealth), CH);
+    textMsg('Health Remaining:', '24px Arial', 'black', CW*0.01, CH*0.9);
+    textMsg(oneCent(player.hunger) + '/100', '30px Arial', 'black', CW*0.2, CH*0.9);
+
     //outline
     //TODO make strokeRect instead!
     c.beginPath();
@@ -125,37 +149,18 @@ function healthBar(healthRemaining) {
     c.stroke();
     
 }
-function UI() {
-    // var rescueBar = new UIBar('grey', 'Days until rescue: ', 
-    //                             CW*0.41, CH*0.9, 
-    //                             CW*0.4, CH*0.8, CW*0.4, CH*0.2);
-    // var starvationBar = new UIBar('palegreen', 'Time until starvation: ',
-    //                                 CW*0.01, CH*0.9,
-    //                                 0, CH*0.8, CW*0.4, CH*0.2);
-    rescueBar();
-    starvationBar('palegreen', 'Time until starvation: ');
-    quadrantLines();
-    inventoryBar();
-
-}
-//starvation Bar
-function starvationBar(color, text){
-    c.fillStyle = color;
-    c.fillRect(0, CH*0.8, CW*0.4, CH*0.2);
-    textMsg(text, '24px Arial', 'black', CW*0.01, CH*0.9);
-}
 //Rescue bar
-function rescueBar(){
+function rescueBar(time){
     c.fillStyle = 'grey';
     c.fillRect(CW*0.4, CH*0.8, CW*0.4, CH*0.2);
-    textMsg('Time until rescue:', '24px Arial', 'black', CW*0.41, CH*0.9);
+    textMsg('Time until rescue: ' + time, '24px Arial', 'black', CW*0.41, CH*0.9);
 }
 //crafting panel
 function inventoryBar(){
     c.fillStyle = 'lightsteelblue';
     c.fillRect(CW*0.8, 0, CW, CH);
     textMsg('Crafting Pane', '24px Arial', 'black', CW*0.85, CH*0.2);
-    textMsg('Sticks: ', '24px Arial', 'black', CW*0.85, CH*0.3)
+    textMsg('Sticks: ', '24px Arial', 'black', CW*0.85, CH*0.3);
 }
 //create a grid on top of map
 function quadrantLines(){
@@ -172,28 +177,55 @@ function quadrantLines(){
     c.strokeStyle = 'black';
     c.stroke();
 }
-
-//produce a rectangle that follows mouse and displays information
-function toolTip(x, y, long, tall){
-    c.fillStyle = 'white';
-    c.fillRect(x, y, long, tall);
-    c.font = '14px Arial';
-    c.fillStyle = 'black';
-    c.fillText('X' + mouse.x + ',    Y' + mouse.y + tpHelper(), x+5, y+25);
-}
-//tooltip filltext helper
-function tpHelper(){
-    if (mouse.x > CW*0.4) {
-        return 'East';
-    }
-    else {
-        return 'West';
-    }
-}
-
 //text message template
 function textMsg(text, fontMsg, textColor, textX, textY){
     c.font = fontMsg;
     c.fillStyle = textColor;
     c.fillText(text, textX, textY);
+}
+//produce a rectangle that follows mouse and displays information
+function toolTip(x, y, long, tall, text){
+    c.fillStyle = 'white';
+    c.fillRect(x, y, long, tall);
+    c.font = '14px Arial';
+    c.fillStyle = 'black';
+    c.fillText('X' + mouse.x + ',    Y' + mouse.y + '\n' + text, x+5, y+25);
+}
+//Tooltip Helper
+function tTHelp(){
+    if ((mouse.x > CW*0.4 && mouse.x < CW*0.8) && mouse.y < CH*0.4) {
+        toolTipText = 'Gather Firewood';
+    }
+    else if (mouse.x < CW*0.4 && mouse.y < CH*0.4) {
+        toolTipText = 'Rest at Camp';
+    }
+    else if (mouse.x < CW*0.4 && (mouse.y > CH*0.4 && mouse.y < CH*0.8)){
+        toolTipText = 'Hunting and Fishing';
+    }
+    else if ((mouse.x > CW*0.4 && mouse.x < CW*0.8) && (mouse.y > CH*0.4 && mouse.y < CH*0.8)) {
+        toolTipText = 'Chop Trees';
+    }
+    else {
+        toolTipText = 'Welcome To Lumberdome!';
+    }
+} 
+//adds or removes player resources
+function interactionFunction(){
+    var alpha = 0.3;
+    c.fillStyle = 'rgba(0, 12, 15, ' + alpha + ')';
+    if ((mouse.x > CW*0.4 && mouse.x < CW*0.8) && mouse.y < CH*0.4) {
+        c.fillRect(CW*0.4, 0, CW*0.8, CH*0.4);
+    }
+    else if (mouse.x < CW*0.4 && mouse.y < CH*0.4) {
+        c.fillRect(0, 0, CW*0.4, CH*0.4);
+    }
+    else if (mouse.x < CW*0.4 && (mouse.y > CH*0.4 && mouse.y < CH*0.8)){
+        c.fillRect(0, CH*0.4, CW*0.4, CH*0.8);
+    }
+    else if ((mouse.x > CW*0.4 && mouse.x < CW*0.8) && (mouse.y > CH*0.4 && mouse.y < CH*0.8)) {
+        c.fillRect(CW*0.4, CH*0.4, CW*0.8, CH*0.8);
+    }
+} 
+function firewood() {
+
 }

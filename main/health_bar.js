@@ -4,6 +4,8 @@ export class HealthBar {
     this.health = health;
     this.rate = rate;
     }
+
+    //player.hunger -> player.hunger
     tick(now){
         var endTime = 0;
         //this.health = now;    
@@ -15,7 +17,7 @@ export class HealthBar {
             this.health = 0;
             return this.health;
         } 
-    }   
+    }  
     
     getNow() {
         return this.health;
