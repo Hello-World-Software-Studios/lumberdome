@@ -154,7 +154,7 @@ function healthBar(healthRemaining) {
     c.stroke();
 
     //inside
-    c.fillStyle = 'lightcoral'
+    c.fillStyle = 'red'
     c.fillRect(0, CH*0.8, (CW*0.4)*(healthRemaining/initialHealth), CH);
 }
 
