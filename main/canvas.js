@@ -166,7 +166,7 @@ function oneCent(x) {
 
 //produce a rectangle that follows mouse and displays information
 function toolTip(x, y, long, tall){
-    c.fillStyle = 'white';
+    c.fillStyle = 'lightblue';
     c.fillRect(x, y, long, tall);
     c.font = '14px Arial';
     c.fillStyle = 'black';
