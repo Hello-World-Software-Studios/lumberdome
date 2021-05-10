@@ -13,6 +13,12 @@ export class Player{
     addSticks(x) {
         this.sticks += x;
     }
+    addLogs(x) {
+        this.logs += x;
+    }
+    fivePerCent(initHealth) {
+        this.hunger -= (initHealth*0.05);
+    }
     getSticks() {
         return this.sticks;
     }

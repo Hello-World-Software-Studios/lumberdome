@@ -43,9 +43,10 @@ window.addEventListener('mousemove',
 window.addEventListener('click', addToInventory);
 
 function addToInventory() {
-    if (toolTipText = 'Gather Firewood') {
-        player.hunger *= 0.95;
-        player.sticks +=5;
+    if (toolTipText == 'Gather Firewood') {
+        player.addSticks(5);
+        //TODO get this working
+        player.hunger -= 1000;
         console.log(player.sticks);
     }
 }
@@ -103,8 +104,7 @@ function animateB() {
 //helpers
 //converts health to int [0,100]
 function oneCent(x) {
-    parseInt((x/initialHealth)*100);
-    return x;
+    return Math.round((x/initialHealth)*100);
 }
 //adds 0 to seconds when below 10
 function digitCount(n) {
