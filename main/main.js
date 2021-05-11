@@ -17,15 +17,16 @@ const CH = canvas.height;
 const HALFW = canvas.width/2;
 const HALFH = canvas.height/2;
 
-var fiveMinutes = 300000;
+const fiveMinutes = 300000;
 var countDownDate = (Date.now() + fiveMinutes);
-var expired = false;
+var rescued = false;
 var expTwo;
 var expiredMsg = 'Game Over';
 
 var player = new Player(18000, 0, 0, 100);
 var initialHealth = player.hunger;
-var hungerBar = new HealthBar(player.hunger, 2);
+var hungerRate = 2; //Best used between (0, ?]
+var hungerBar = new HealthBar(player.hunger, hungerRate);
 
 var toolTipText = ' ';
 
@@ -45,10 +46,16 @@ window.addEventListener('click', addToInventory);
 function addToInventory() {
     if (toolTipText == 'Gather Firewood') {
         player.addSticks(5);
-        //TODO get this working
-        player.hunger -= 1000;
-        console.log(player.sticks);
+        player.starve(1000);
     }
+    if (toolTipText == 'Chop Trees') {
+        player.addLogs(5);
+        player.starve(2000);    
+    }
+    if (toolTipText = 'Hunting and Fishing') {
+        player.addHealth(1000);
+    }
+    else {console.log('nothing to report')}
 }
 
 function main(){
@@ -68,11 +75,11 @@ function main(){
         //console.log(expTwo);
         if (distance < 0) {
             clearInterval(countDown);
-            expired = true;
+            rescued = true;
         }
     }, 1000);
     
-    if (player.hunger > 0 && expired == false) {
+    if (player.hunger > 0 && rescued == false) {
         animateA();
     }
     else {
@@ -85,12 +92,13 @@ main();
 //Animation Loop
 function animateA() {
     player.hunger = hungerBar.tick(player.hunger, hungerBar.rate);
+    //tickHelper();
     c.clearRect(0, 0, canvas.width, canvas.height);
     c.drawImage(bg, 0, 0, canvas.width*0.8, canvas.height*0.8);
     UI(player.hunger, expTwo);
     interactionFunction();
     tTHelp();
-    toolTip(mouse.x-100, mouse.y+20, 150, 50, toolTipText);
+    toolTip(mouse.x-100, mouse.y+20, 250, 50, toolTipText);
     requestAnimationFrame(animateA);
 
 }
@@ -99,9 +107,19 @@ function animateB() {
     toolTip(mouse.x-100, mouse.y+20, 150, 50);
     requestAnimationFrame(animateB);
 }
+function gameOverScreen() {
+    c.clearRect(0, 0, canvas.width, canvas.height);
+    c.drawImage(bg, 0, 0, canvas.width*0.8, canvas.height*0.8);
+    textMsg('Game Over!', '100 px Arial', 'darkred', HALFW, HALFH);
+}
 
 /////////////////////////////////////////////
 //helpers
+function tickHelper() {
+    var end = 0;
+    if (player.hunger > end)
+    player.tick(hungerRate);
+}
 //converts health to int [0,100]
 function oneCent(x) {
     return Math.round((x/initialHealth)*100);
@@ -158,9 +176,18 @@ function rescueBar(time){
 //crafting panel
 function inventoryBar(){
     c.fillStyle = 'lightsteelblue';
-    c.fillRect(CW*0.8, 0, CW, CH);
-    textMsg('Crafting Pane', '24px Arial', 'black', CW*0.85, CH*0.2);
-    textMsg('Sticks: ', '24px Arial', 'black', CW*0.85, CH*0.3);
+    c.fillRect(CW*0.8, 0, CW*0.2, CH);
+    inventoryButtons('Craft Campfire', 'Craft Shelter');
+    textMsg('Crafting Pane', '24px Arial', 'black', CW*0.82, CH*0.12);
+    textMsg('Sticks: ' + player.sticks, '24px Arial', 'black', CW*0.85, CH*0.3);
+    textMsg('Logs: ' + player.logs, '24px Arial', 'black', CW*0.85, CH*0.6);
+}
+function inventoryButtons(textA, textB) {
+    c.fillStyle = 'darkred';
+    c.fillRect(CW*0.82, CH*0.35, CW*0.15, CH*0.08);
+    c.fillRect(CW*0.82, CH*0.65, CW*0.15, CH*0.08);
+    textMsg(textA, '24px Arial', 'white', CW*0.83, CH*0.4);
+    textMsg(textB, '24px Arial', 'white', CW*0.83, CH*0.7);
 }
 //create a grid on top of map
 function quadrantLines(){
@@ -172,8 +199,8 @@ function quadrantLines(){
     c.stroke();
 
     c.beginPath();
-    c.moveTo(0, CW*0.2);
-    c.lineTo(CW*0.8, CW*0.2);
+    c.moveTo(0, CH*0.4);
+    c.lineTo(CW*0.8, CH*0.4);
     c.strokeStyle = 'black';
     c.stroke();
 }
@@ -187,9 +214,9 @@ function textMsg(text, fontMsg, textColor, textX, textY){
 function toolTip(x, y, long, tall, text){
     c.fillStyle = 'white';
     c.fillRect(x, y, long, tall);
-    c.font = '14px Arial';
+    c.font = '20px Arial';
     c.fillStyle = 'black';
-    c.fillText('X' + mouse.x + ',    Y' + mouse.y + '\n' + text, x+5, y+25);
+    c.fillText(text, x+5, y+25);
 }
 //Tooltip Helper
 function tTHelp(){
@@ -205,6 +232,9 @@ function tTHelp(){
     else if ((mouse.x > CW*0.4 && mouse.x < CW*0.8) && (mouse.y > CH*0.4 && mouse.y < CH*0.8)) {
         toolTipText = 'Chop Trees';
     }
+    else if ((mouse.x > CW*0.82 && mouse.x < CW*0.97) && (mouse.y > CH*0.35 && mouse.y < CH*0.43)) {
+        toolTipText = 'Campfire -5 Sticks';
+    }
     else {
         toolTipText = 'Welcome To Lumberdome!';
     }
@@ -214,18 +244,18 @@ function interactionFunction(){
     var alpha = 0.3;
     c.fillStyle = 'rgba(0, 12, 15, ' + alpha + ')';
     if ((mouse.x > CW*0.4 && mouse.x < CW*0.8) && mouse.y < CH*0.4) {
-        c.fillRect(CW*0.4, 0, CW*0.8, CH*0.4);
+        c.fillRect(CW*0.4, 0, CW*0.4, CH*0.4);
     }
     else if (mouse.x < CW*0.4 && mouse.y < CH*0.4) {
         c.fillRect(0, 0, CW*0.4, CH*0.4);
     }
     else if (mouse.x < CW*0.4 && (mouse.y > CH*0.4 && mouse.y < CH*0.8)){
-        c.fillRect(0, CH*0.4, CW*0.4, CH*0.8);
+        c.fillRect(0, CH*0.4, CW*0.4, CH*0.4);
     }
     else if ((mouse.x > CW*0.4 && mouse.x < CW*0.8) && (mouse.y > CH*0.4 && mouse.y < CH*0.8)) {
-        c.fillRect(CW*0.4, CH*0.4, CW*0.8, CH*0.8);
+        c.fillRect(CW*0.4, CH*0.4, CW*0.4, CH*0.4);
     }
 } 
-function firewood() {
-
+function buildFire() {
+    return;
 }

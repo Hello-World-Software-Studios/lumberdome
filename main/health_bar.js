@@ -18,7 +18,9 @@ export class HealthBar {
             return this.health;
         } 
     }  
-    
+    setRate() {
+        return;
+    }
     getNow() {
         return this.health;
     }
