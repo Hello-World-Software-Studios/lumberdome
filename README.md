@@ -1,6 +1,9 @@
 # lumberdome
 A simple survival game in a web application
 
+version 0.5 May 10, 2021:
+have timer, health, and inventory working.
+
 version 0.2 April 23, 2021:
 began animating elements
 
