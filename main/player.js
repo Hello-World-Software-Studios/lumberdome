@@ -28,6 +28,12 @@ export class Player{
     starve(x) {
         this.hunger -= x;
     }
+    removeSticks(x) {
+        this.sticks -= x;
+    }
+    removeLogs(x) {
+        this.logs -= x;
+    }
     getSticks() {
         return this.sticks;
     }

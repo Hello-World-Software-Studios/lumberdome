@@ -8,7 +8,17 @@ var c = canvas.getContext('2d');
 const bg = new Image();
 bg.src = 'data/bgs/forest.jpg';
 const cf = new Image();
-cf.src = 'data/sprites/cf1000780.jpg';
+cf.src = 'data/sprites/cf.jpg';
+const failure = new Image();
+failure.src = 'data/Lumberdome.png';
+const CF_ICON = new Image();
+CF_ICON.src = 'data/sprites/cf_icon.png';
+const RAIN_ICON = new Image();
+RAIN_ICON.src = 'data/sprites/rain_icon.png';
+const SUN_ICON = new Image();
+SUN_ICON.src = 'data/sprites/sun_icon.png';
+const TENT_ICON = new Image();
+TENT_ICON.src = 'data/sprites/tent_icon.png';
 
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
@@ -28,6 +38,10 @@ var initialHealth = player.hunger;
 var hungerRate = 2; //Best used between (0, ?]
 var hungerBar = new HealthBar(player.hunger, hungerRate);
 
+var campfire = false;
+var rain = false;
+var shelter = false;
+
 var toolTipText = ' ';
 
 // Mouse Event Listeners
@@ -42,20 +56,44 @@ window.addEventListener('mousemove',
     }
 )
 window.addEventListener('click', addToInventory);
-
 function addToInventory() {
-    if (toolTipText == 'Gather Firewood') {
-        player.addSticks(5);
-        player.starve(1000);
+    switch (toolTipText) {
+        case 'Gather Firewood': 
+            player.addSticks(5);
+            player.starve(2000);
+            break;
+        case 'Chop Trees':
+            player.addLogs(5);
+            player.starve(2000); 
+            break;   
+        case 'Hunting and Fishing':
+            player.addHealth(1000);
+            break;
+        case 'Campfire -5 Sticks':
+            if (player.sticks >= 5) {
+                if (campfire == true) {
+                    break;
+                }
+                else {
+                    player.removeSticks(5);
+                    campFireToTrue();
+                    break;
+                }
+            }
+        case 'Shelter -10 Logs':
+            if (player.logs >= 10) {
+                if (shelter == true) {
+                    break;
+                }
+                else {
+                    player.removeLogs(10);
+                    shelterToTrue();
+                    break;
+                }
+            }
+        default: 
+            console.log('switch statement working!');
     }
-    if (toolTipText == 'Chop Trees') {
-        player.addLogs(5);
-        player.starve(2000);    
-    }
-    if (toolTipText = 'Hunting and Fishing') {
-        player.addHealth(1000);
-    }
-    else {console.log('nothing to report')}
 }
 
 function main(){
@@ -78,28 +116,29 @@ function main(){
             rescued = true;
         }
     }, 1000);
-    
-    if (player.hunger > 0 && rescued == false) {
-        animateA();
-    }
-    else {
-        animateB();
-    }  
+    animateA(); 
 }
 
 main();
 ////////////////////////////////
 //Animation Loop
 function animateA() {
-    player.hunger = hungerBar.tick(player.hunger, hungerBar.rate);
-    //tickHelper();
+    //player.hunger = hungerBar.tick(player.hunger, hungerBar.rate);
+    tickHelper();
     c.clearRect(0, 0, canvas.width, canvas.height);
     c.drawImage(bg, 0, 0, canvas.width*0.8, canvas.height*0.8);
+    //campfireFunc();
     UI(player.hunger, expTwo);
+    renderIcons();
     interactionFunction();
     tTHelp();
     toolTip(mouse.x-100, mouse.y+20, 250, 50, toolTipText);
-    requestAnimationFrame(animateA);
+    if (player.hunger > 0 && rescued == false) {
+        requestAnimationFrame(animateA);
+    }
+    else {
+        requestAnimationFrame(animateB);
+    }
 
 }
 function animateB() {
@@ -109,7 +148,7 @@ function animateB() {
 }
 function gameOverScreen() {
     c.clearRect(0, 0, canvas.width, canvas.height);
-    c.drawImage(bg, 0, 0, canvas.width*0.8, canvas.height*0.8);
+    c.drawImage(failure, 0, 0, canvas.width*0.8, canvas.height*0.8);
     textMsg('Game Over!', '100 px Arial', 'darkred', HALFW, HALFH);
 }
 
@@ -147,9 +186,9 @@ function UI(health, time) {
 //health bar object
 function healthBar(healthRemaining) {
     //inside
-    c.fillStyle = 'palegreen';
+    c.fillStyle = 'lightcoral';
     c.fillRect(0, CH*0.8, CW*0.4, CH*0.2);
-    c.fillStyle = 'lightcoral'
+    c.fillStyle = 'palegreen';
     c.fillRect(0, CH*0.8, (CW*0.4)*(healthRemaining/initialHealth), CH);
     textMsg('Health Remaining:', '24px Arial', 'black', CW*0.01, CH*0.9);
     textMsg(oneCent(player.hunger) + '/100', '30px Arial', 'black', CW*0.2, CH*0.9);
@@ -232,8 +271,11 @@ function tTHelp(){
     else if ((mouse.x > CW*0.4 && mouse.x < CW*0.8) && (mouse.y > CH*0.4 && mouse.y < CH*0.8)) {
         toolTipText = 'Chop Trees';
     }
-    else if ((mouse.x > CW*0.82 && mouse.x < CW*0.97) && (mouse.y > CH*0.35 && mouse.y < CH*0.43)) {
+    else if ((mouse.x > CW*0.82 && mouse.x < CW*0.95) && (mouse.y > CH*0.35 && mouse.y < CH*0.43)) {
         toolTipText = 'Campfire -5 Sticks';
+    }
+    else if ((mouse.x > CW*0.82 && mouse.x < CW*0.95) && (mouse.y > CH*0.65 && mouse.y < CH*0.73)) {
+        toolTipText = 'Shelter -10 Logs';
     }
     else {
         toolTipText = 'Welcome To Lumberdome!';
@@ -256,6 +298,41 @@ function interactionFunction(){
         c.fillRect(CW*0.4, CH*0.4, CW*0.4, CH*0.4);
     }
 } 
-function buildFire() {
-    return;
+function campFireToTrue() {
+    campfire = true;
+}
+function shelterToTrue() {
+    shelter = true;
+}
+function campfireAnim() {
+    c.drawImage(cf, 0, 200, 100, 200, CW*0.15, CH*0.2, CW*0.1, CH*0.2);}
+
+function campfireFunc() {
+    while (campfire == true) {
+        //campfireAnim();
+        hungerRate * 0.75;
+    }
+}
+function renderIcons(campfire, shelter, rain) {
+    renderWeather(CW*0.81, CH*0.89);
+    renderFire(CW*0.87, CH*0.89);
+    renderTent(CW*0.93, CH*0.89);
+}
+function renderFire(x, y) {
+    if (campfire == true) {
+        c.drawImage(CF_ICON, x, y, CH*0.06, CH*0.06);
+    }
+}
+function renderWeather(x, y) {
+    if (rain == true) {
+        c.drawImage(RAIN_ICON, x, y, CH*0.06, CH*0.06);
+    }
+    else {
+        c.drawImage(SUN_ICON, x, y, CH*0.06, CH*0.06);
+    }
+}
+function renderTent(x, y) {
+    if (shelter == true) {
+        c.drawImage(TENT_ICON, x, y, CH*0.06, CH*0.06);
+    }
 }
