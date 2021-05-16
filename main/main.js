@@ -1,5 +1,5 @@
 import { Player } from './player.js';
-import { HealthBar } from './health_bar.js';
+//import { HealthBar } from './health_bar.js';
 //////////////////////////////////////////////////////
 //Variables and Data Definitions
 var canvas = document.querySelector('canvas');
@@ -8,9 +8,7 @@ var c = canvas.getContext('2d');
 const bg = new Image();
 bg.src = 'data/bgs/forest.jpg';
 const cf = new Image();
-cf.src = 'data/sprites/cf.jpg';
-const failure = new Image();
-failure.src = 'data/Lumberdome.png';
+cf.src = 'data/sprites/cf.png';
 const CF_ICON = new Image();
 CF_ICON.src = 'data/sprites/cf_icon.png';
 const RAIN_ICON = new Image();
@@ -35,8 +33,7 @@ var expiredMsg = 'Game Over';
 
 var player = new Player(18000, 0, 0, 100);
 var initialHealth = player.hunger;
-var hungerRate = 2; //Best used between (0, ?]
-var hungerBar = new HealthBar(player.hunger, hungerRate);
+//var hungerRate = 2; //Best used between (0, ?]
 
 var campfire = false;
 var rain = false;
@@ -67,8 +64,14 @@ function addToInventory() {
             player.starve(2000); 
             break;   
         case 'Hunting and Fishing':
-            player.addHealth(1000);
-            break;
+            if (player.sticks <= 0) {
+                break;
+            }
+            else {
+                player.removeSticks(1)
+                player.addHealth(500);
+                break;
+            }
         case 'Campfire -5 Sticks':
             if (player.sticks >= 5) {
                 if (campfire == true) {
@@ -80,13 +83,13 @@ function addToInventory() {
                     break;
                 }
             }
-        case 'Shelter -10 Logs':
-            if (player.logs >= 10) {
+        case 'Shelter -20 Logs':
+            if (player.logs >= 20) {
                 if (shelter == true) {
                     break;
                 }
                 else {
-                    player.removeLogs(10);
+                    player.removeLogs(20);
                     shelterToTrue();
                     break;
                 }
@@ -110,7 +113,6 @@ function main(){
         else {
             expTwo = minutes + ":0" + seconds;
         }
-        //console.log(expTwo);
         if (distance < 0) {
             clearInterval(countDown);
             rescued = true;
@@ -123,16 +125,18 @@ main();
 ////////////////////////////////
 //Animation Loop
 function animateA() {
-    //player.hunger = hungerBar.tick(player.hunger, hungerBar.rate);
-    tickHelper();
+    //rainFunction();
+    var hungerRate = hungerRateFunction();
+    tickHelper(hungerRate);
     c.clearRect(0, 0, canvas.width, canvas.height);
     c.drawImage(bg, 0, 0, canvas.width*0.8, canvas.height*0.8);
-    //campfireFunc();
     UI(player.hunger, expTwo);
+    campfireAnim();
     renderIcons();
-    interactionFunction();
+    greySquareFunction();
     tTHelp();
     toolTip(mouse.x-100, mouse.y+20, 250, 50, toolTipText);
+    
     if (player.hunger > 0 && rescued == false) {
         requestAnimationFrame(animateA);
     }
@@ -148,16 +152,16 @@ function animateB() {
 }
 function gameOverScreen() {
     c.clearRect(0, 0, canvas.width, canvas.height);
-    c.drawImage(failure, 0, 0, canvas.width*0.8, canvas.height*0.8);
-    textMsg('Game Over!', '100 px Arial', 'darkred', HALFW, HALFH);
+    c.fillRect(0, 0, CW, CH);
+    textMsg('Game Over!', '100px Arial', 'darkred', CW*0.25, HALFH);
 }
 
 /////////////////////////////////////////////
 //helpers
-function tickHelper() {
+function tickHelper(rate) {
     var end = 0;
     if (player.hunger > end)
-    player.tick(hungerRate);
+    player.tick(rate);
 }
 //converts health to int [0,100]
 function oneCent(x) {
@@ -172,7 +176,6 @@ function digitCount(n) {
       n /= 10;
       ++count;
     }
-  
     return count;
 }
 
@@ -275,14 +278,14 @@ function tTHelp(){
         toolTipText = 'Campfire -5 Sticks';
     }
     else if ((mouse.x > CW*0.82 && mouse.x < CW*0.95) && (mouse.y > CH*0.65 && mouse.y < CH*0.73)) {
-        toolTipText = 'Shelter -10 Logs';
+        toolTipText = 'Shelter -20 Logs';
     }
     else {
         toolTipText = 'Welcome To Lumberdome!';
     }
 } 
-//adds or removes player resources
-function interactionFunction(){
+//highlights the quadrant player is hovering over
+function greySquareFunction(){
     var alpha = 0.3;
     c.fillStyle = 'rgba(0, 12, 15, ' + alpha + ')';
     if ((mouse.x > CW*0.4 && mouse.x < CW*0.8) && mouse.y < CH*0.4) {
@@ -298,21 +301,21 @@ function interactionFunction(){
         c.fillRect(CW*0.4, CH*0.4, CW*0.4, CH*0.4);
     }
 } 
+
 function campFireToTrue() {
     campfire = true;
 }
 function shelterToTrue() {
     shelter = true;
 }
-function campfireAnim() {
-    c.drawImage(cf, 0, 200, 100, 200, CW*0.15, CH*0.2, CW*0.1, CH*0.2);}
 
-function campfireFunc() {
-    while (campfire == true) {
-        //campfireAnim();
-        hungerRate * 0.75;
+function campfireAnim() {
+    if (campfire == true) {
+        c.drawImage(cf, 0, 0, 32, 32, CW*0.15, CH*0.2, CW*0.1, CH*0.2);
     }
 }
+
+
 function renderIcons(campfire, shelter, rain) {
     renderWeather(CW*0.81, CH*0.89);
     renderFire(CW*0.87, CH*0.89);
@@ -336,3 +339,32 @@ function renderTent(x, y) {
         c.drawImage(TENT_ICON, x, y, CH*0.06, CH*0.06);
     }
 }
+function hungerRateFunction() {
+    if (rain == false && campfire == false && shelter == false) {
+        return 2;
+    }
+    if (rain == false && campfire == false && shelter == true) {
+        return 1.5;
+    }
+    if (rain == false && campfire == true && shelter == true) {
+        return 1;
+    }
+    if (rain == true && campfire == true && shelter == true) {
+        return 2;
+    }
+    if (rain == true && campfire == false && shelter == false) {
+        return 4;
+    }
+    if (rain == true && campfire == false && shelter == true) {
+        return 2;
+    }
+    if (rain == true && campfire == true && shelter == false) {
+        return 3;
+    }
+    else {return 2;}
+}
+// function rainFunction() {
+//     if (player.hunger%2000 == 0 && rain == false) {
+//         rain = true;
+//     }
+// }
