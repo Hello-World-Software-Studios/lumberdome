@@ -1,37 +1,40 @@
 <!DOCTYPE html>
 <html>
-
+    
 <head>        
     <title>Welcome to Lumberdome</title>
-    <link rel='stylesheet' type='text/css' href='index.css'>
+    <link rel='stylesheet' type='text/css' href='./index.css'>
+    <audio src='./data/sounds/slowforest.mp3' id='music'></audio>
 </head>
 
 <body>
-        <div class='banner'> 
-            <nav>
-                <div class='navbar' >
-                <a href='index.html'><div>Home</div></a>
-                <a href='about.html'><div>About</div></a>
-                <a href='contact.html'><div>Contact and Credits</div></a>
-                </div>
-            </nav>
-            
-        </div>
+    <div class='Lumberdome'>
+        <canvas>
+            <script type='module' src='./main/main.js'></script>
+        </canvas>
+        </div>    
     <div class='pageTop'>
-        <div class='logo'></div>
+        <div class='logo'>
+            <img src='./data/LumberdomeLogo.png' class='center'>
+        </div>
         <div class='h1bar'>
-            <h1>Welcome to Lumberdome!</h1>
+            <h1>Welcome to Lumberdome!</h1> 
             <p>It is just you and your axe. Use it to harvest trees for sticks and logs. 
             Use the wood to survive as many days as you can!
             </p>
+            <div class='startButton' >
+                <button>Start</button>
+            </div>
         </div>
     </div>
-    <div class='welcomeCanvas'>
-    <canvas>
-        <script src='main/canvas.js'></script>
-    </canvas>
-    </div>      
-
+      
+    <nav>
+        <div class='navbar' >
+        <a href='./index.html'><div>Home</div></a>
+        <a href='./about.html'><div>About</div></a>
+        <a href='./contact.html'><div>Contact and Credits</div></a>
+        </div>
+    </nav>
 </body>
 
 <footer>
