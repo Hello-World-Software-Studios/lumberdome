@@ -347,7 +347,6 @@ function shelterToTrue() {
 
 
 
-
 function renderIcons(campfire, shelter, rain) {
     renderWeather(CW*0.81, CH*0.89);
     renderFire(CW*0.87, CH*0.89);
