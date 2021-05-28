@@ -1,5 +1,5 @@
 import { Player } from './player.js';
-import { gameState } from './game_state.js';
+import { GameState } from './game_state.js';
 import { RainDrop } from './rain.js';
 
 var canvas = document.querySelector('canvas');
@@ -40,12 +40,9 @@ function main(){
    
     var initialHealth = 18000;
     var player0 = new Player(initialHealth, 0, 0);
-    var gameState0 = new gameState(animState0, player0, environment, mouse);
+    var gameState0 = new GameState(animState0, player0, environment, mouse);
 
-    window.addEventListener('resize', () => {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-    })
+    
     window.addEventListener('click',
     function(gameState0){
         addToInventory(gameState0);
@@ -75,11 +72,10 @@ function main(){
 ////////////////////////////////
 function makeItCloudy() {
             
-    for (var i = 0; i < 50; i++) {
-        rainArray[i] = new RainDrop((Math.random()*3), (Math.random()*CW), -5, Math.round(Math.random()*10));
+    for (var i = 0; i < 500; i++) {
+        rainArray[i] = new RainDrop((Math.random()*3), (Math.random()*CW), Math.random()*CH, Math.round(Math.random()*10+1));
     }
 }
-
 
 function addToInventory(gameState0) {
     let {hunger, sticks, logs} = player0;
@@ -150,12 +146,17 @@ function animateA(gameState0) {
     SUN_ICON.src = 'data/sprites/sun_icon.png';
     const TENT_ICON = new Image();
     TENT_ICON.src = 'data/sprites/tent_icon.png';
+    const RAIN_DROP = new Image();
+    RAIN_DROP.src = 'data/sprites/raindrop.png';
     
     let  {frameCounter, frameX, frameY} = animState0;
     let {hunger, sticks, logs} = player0;
     let {x, y, toolTipText} = mouse;
     let {rain, campfire, shelter, rainArray} = environment;
-
+    window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    });
     window.addEventListener('mousemove', 
     function(event){
         mouse.x = event.x;
@@ -180,11 +181,9 @@ function animateA(gameState0) {
     renderIcons(environment.rain, environment.campfire, environment.shelter);
     greySquareFunction(mouse.x, mouse.y);
     toolTip(mouse.x-100, mouse.y+20, 250, 50, mouse.toolTipText);
-
     //END Phase
     frameXTicker();
     animState0.frameCounter++;
-    console.log(hungerRate, rain);
     if (player0.hunger > 0 && rescued == false) { 
         requestAnimationFrame(function() {
             animateA(gameState0);
@@ -193,50 +192,34 @@ function animateA(gameState0) {
     else {
         requestAnimationFrame(animateB);
     }
-       
+    //advance y position and draw each drop  
     function makeItRain(rainArray) {
-        for (var i = 0; i < rainArray.length; i++) {
-            rainArray[i].dropY += 1*rainArray[i].fallSpeed;
-            if (rainArray[i].dropY >= CH) {
-                rainArray[i].dropY = 0;
+        rainArray.map((rainArray) => {
+            if (rainArray.dropY >= CH) {
+                rainArray.dropY = 0;
             }
-            drawRainDrops();
-        }
-    }
-    function drawRainDrops() {
+            else {rainArray.dropY += 1*rainArray.fallSpeed;}
+        });
         for (var i = 0; i < rainArray.length; i++) {
-            c.beginPath();
-            c.arc(rainArray[i].dropX, rainArray[i].dropY, rainArray[i].size, 0, 2 * Math.PI);
-            c.lineWidth = 3;
-            c.strokeStyle = 'blue';
-            c.stroke();
+            c.drawImage(RAIN_DROP, rainArray[i].dropX, rainArray[i].dropY);
         }
+        // rainArray.forEach((rainArray) => {
+        //     console.log(rainArray.dropY);
+        //     drawRainDrop();
+        // });
+        // }
     }
     
+    
+    // 50% chance to start or stop raining every interval
     function isItRaining() {
+        var num = (Math.random()*100);
+        var interval = 600;
         if (rain == false) {
-            if (animState0.frameCounter%600 == 0) {
-                var num = (Math.random()*100);
-                if (num <= 50) {
-                    return true;
-                }
-                else {
-                    return false;
-                }
-            }
-            else {return false;}
+            return animState0.frameCounter%interval == 0 && num <= 50;
         }
-        else if (rain == true) {
-            if (animState0.frameCounter%600 == 0) {
-                var num = (Math.random()*100);
-                if (num <= 50) {
-                    return false;
-                }
-                else {
-                    return true;
-                }
-            }
-            else {return true;}
+        if (rain == true) {
+            return !(animState0.frameCounter%interval == 0 && num <= 50);
         }
         else {return false;}
     }
@@ -457,31 +440,45 @@ function textMsg(text, fontMsg, textColor, textX, textY){
 }
 
 
-
+//TODO 
+//replace with more arithmetic than conditions
 function hungerRateFunction(environment) {
-    if (environment.rain == false && environment.campfire == false && environment.shelter == false) {
-        return 2;
+    let hungerRate = 5;
+    if (environment.rain == true) {
+        hungerRate += 4;
     }
-    if (environment.rain == false && environment.campfire == false && environment.shelter == true) {
-        return 1.5;
+    if (environment.campfire == true) {
+        hungerRate -= 2;
     }
-    if (environment.rain == false && environment.campfire == true && environment.shelter == false) {
-        return 1.5;
+    if (environment.shelter == true) {
+        hungerRate -= 2;
     }
-    if (environment.rain == false && environment.campfire == true && environment.shelter == true) {
-        return 1;
-    }
-    if (environment.rain == true && environment.campfire == true && environment.shelter == true) {
-        return 2;
-    }
-    if (environment.rain == true && environment.campfire == false && environment.shelter == false) {
-        return 4;
-    }
-    if (environment.rain == true && environment.campfire == false && environment.shelter == true) {
-        return 2;
-    }
-    if (environment.rain == true && environment.campfire == true && environment.shelter == false) {
-        return 3;
-    }
-    else {return 2;}
+    return hungerRate;
 }
+// function hungerRateFunction(environment) {
+//     if (environment.rain == false && environment.campfire == false && environment.shelter == false) {
+//         return 2;
+//     }
+//     if (environment.rain == false && environment.campfire == false && environment.shelter == true) {
+//         return 1.5;
+//     }
+//     if (environment.rain == false && environment.campfire == true && environment.shelter == false) {
+//         return 1.5;
+//     }
+//     if (environment.rain == false && environment.campfire == true && environment.shelter == true) {
+//         return 1;
+//     }
+//     if (environment.rain == true && environment.campfire == true && environment.shelter == true) {
+//         return 2;
+//     }
+//     if (environment.rain == true && environment.campfire == false && environment.shelter == false) {
+//         return 8;
+//     }
+//     if (environment.rain == true && environment.campfire == false && environment.shelter == true) {
+//         return 4;
+//     }
+//     if (environment.rain == true && environment.campfire == true && environment.shelter == false) {
+//         return 6;
+//     }
+//     else {return 2;}
+// }

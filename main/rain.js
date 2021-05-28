@@ -5,5 +5,7 @@ export class RainDrop {
         this.dropY = dropY;
         this.fallSpeed = fallSpeed;
     }
-    
+    //TODO 
+    // Make some class methods to make main file leaner
+
 }
