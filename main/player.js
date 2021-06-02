@@ -2,12 +2,15 @@
 //Player Script
 
 export class Player{
-    constructor(hunger, sticks, logs) {
+    constructor(hunger, sticks, logs, pFrameX, pFrameY) {
     //point of control for countdown init
     this.hunger = hunger;
     //player resources
     this.sticks = sticks; //positive integer or 0
     this.logs = logs; //positive integer or 0
+    //animation
+    this.pFrameX = pFrameX;
+    this.pFrameY = pFrameY;
     //TODO create durability for axe
     //this.axe = axe //number from 0 to 100
     }
