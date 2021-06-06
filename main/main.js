@@ -196,7 +196,7 @@ function main(){
                 renderIcons(environment.rain, environment.campfire, environment.shelter);
                 greySquareFunction(mouse.x, mouse.y);
                 toolTip(mouse.x-100, mouse.y+20, 250, 50, mouse.toolTipText);
-                //END Phase
+                //End Phase
                 frameXTicker();
                 animState0.frameCounter++;
 
