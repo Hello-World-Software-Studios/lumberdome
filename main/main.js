@@ -1,5 +1,5 @@
-import { Player } from './player.js';
 import { GameState } from './game_state.js';
+import { Player } from './player.js';
 import { RainDrop } from './rain.js';
 
 var canvas = document.querySelector('canvas');
@@ -175,8 +175,6 @@ function main(){
         tickHelper(player0, hungerRate);
         environment.rain = isItRaining();
 
-        //console.log(time, now, delta);
-
         if (delta > 17) {
             requestAnimationFrame(function() {
                 animateA(gameState0);
@@ -208,29 +206,7 @@ function main(){
                 requestAnimationFrame(animateB);
             }
         }
-        // //Draw phase
-        // screenRefresh();
-        // UI(player0, timeRemaining, initialHealth);
-        // campfireAnim();
-        // drawTent();
-        // drawPlayer();
-        // if (environment.rain == true) {
-        //     makeItRain(environment.rainArray);
-        // }
-        // renderIcons(environment.rain, environment.campfire, environment.shelter);
-        // greySquareFunction(mouse.x, mouse.y);
-        // toolTip(mouse.x-100, mouse.y+20, 250, 50, mouse.toolTipText);
-        // //END Phase
-        // frameXTicker();
-        // animState0.frameCounter++;
-        // if (player0.hunger > 0 && rescued == false) { 
-        //     requestAnimationFrame(function() {
-        //         animateA(gameState0);
-        //     });
-        // }
-        // else {
-        //     requestAnimationFrame(animateB);
-        // }
+        
         //advance y position and draw each drop  
         function makeItRain(rainArray) {
             rainArray.map((rainArray) => {
@@ -242,10 +218,6 @@ function main(){
             for (var i = 0; i < rainArray.length; i++) {
                 c.drawImage(RAIN_DROP, rainArray[i].dropX, rainArray[i].dropY);
             }
-            // rainArray.forEach((rainArray) => {
-            //     drawRainDrop();
-            // });
-            // }
         }
         // 50% chance to start or stop raining every interval
         function isItRaining() {
@@ -259,7 +231,6 @@ function main(){
             }
             else {return false;}
         }
-
         function screenRefresh() {
             c.clearRect(0, 0, canvas.width, canvas.height);
             c.drawImage(bg, 0, 0, CW*0.8, CH*0.8);
@@ -406,10 +377,8 @@ function main(){
     }
 }
 
-
 main();
-/////////////////////////////////////////////
-//helpers
+
 function tickHelper(player0, rate) {
     var end = 0;
     if (player0.hunger > end)
@@ -526,30 +495,3 @@ function hungerRateFunction(environment) {
     }
     return hungerRate;
 }
-// function hungerRateFunction(environment) {
-//     if (environment.rain == false && environment.campfire == false && environment.shelter == false) {
-//         return 2;
-//     }
-//     if (environment.rain == false && environment.campfire == false && environment.shelter == true) {
-//         return 1.5;
-//     }
-//     if (environment.rain == false && environment.campfire == true && environment.shelter == false) {
-//         return 1.5;
-//     }
-//     if (environment.rain == false && environment.campfire == true && environment.shelter == true) {
-//         return 1;
-//     }
-//     if (environment.rain == true && environment.campfire == true && environment.shelter == true) {
-//         return 2;
-//     }
-//     if (environment.rain == true && environment.campfire == false && environment.shelter == false) {
-//         return 8;
-//     }
-//     if (environment.rain == true && environment.campfire == false && environment.shelter == true) {
-//         return 4;
-//     }
-//     if (environment.rain == true && environment.campfire == true && environment.shelter == false) {
-//         return 6;
-//     }
-//     else {return 2;}
-// }
