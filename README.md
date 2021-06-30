@@ -1,5 +1,9 @@
 # lumberdome
-A simple survival game in a web application
+A simple survival game in a Javascript web application
+
+version 0.4 June 30, 2021:
+Game can be played, next phase is is polishing and refactoring.
+
 version 0.3 May 23, 2021:
 basic gameplay done, most global variables removed, functions encapsulated.
 

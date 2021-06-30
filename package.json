@@ -1,0 +1,25 @@
+{
+  "name": "lumberdome",
+  "version": "1.0.0",
+  "description": "A simple survival game in a Javascript web application",
+  "main": "index.js",
+  "dependencies": {},
+  "devDependencies": {
+    "eslint": "^7.29.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.23.4"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Hello-World-Software-Studios/lumberdome.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Hello-World-Software-Studios/lumberdome/issues"
+  },
+  "homepage": "https://github.com/Hello-World-Software-Studios/lumberdome#readme"
+}
