@@ -1,6 +1,6 @@
-import { GameState } from './game_state';
-import { Player } from './player';
-import { RainDrop } from './rain';
+import { GameState } from './game_state.js';
+import { Player } from './player.js';
+import { RainDrop } from './rain.js';
 
 const canvas = document.querySelector('canvas');
 const c = canvas.getContext('2d');
@@ -44,7 +44,7 @@ function main() {
       addToInventory(gameState0);
     });
 
-  var countDown = setInterval(() => {
+  const countDown = setInterval(() => {
     const now = new Date().getTime();
     const distance = countDownDate - now;
     const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
@@ -68,7 +68,6 @@ function main() {
   }
 
   function addToInventory(gameState0) {
-    const { hunger, sticks, logs } = player0;
     const { toolTipText } = mouse;
     const { rain, campfire, shelter } = environment;
     switch (mouse.toolTipText) {
