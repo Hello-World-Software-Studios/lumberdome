@@ -6,8 +6,8 @@ const canvas = document.querySelector('canvas');
 const c = canvas.getContext('2d');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
-const CW = canvas.width;
-const CH = canvas.height;
+var CW = canvas.width;
+var CH = canvas.height;
 
 function main() {
   const rainArray = [];
@@ -34,42 +34,46 @@ function main() {
     y: undefined,
     toolTipText: 'String',
   };
-
   const initialHealth = 18000;
   const player0 = new Player(initialHealth, 0, 0, 0, 0);
   const gameState0 = new GameState(animState0, player0, environment, mouse);
-
   window.addEventListener('click',
     (gameState0) => {
       addToInventory(gameState0);
-    });
-
+  });
+  window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    CW = canvas.width;
+    CH = canvas.height;
+    console.log(window.innerWidth, window.innerHeight);
+  });
   const countDown = setInterval(() => {
     const now = new Date().getTime();
     const distance = countDownDate - now;
     const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+    function isRescued() {
+      if (distance < 0) {
+        clearInterval(countDown);
+        rescued = true;
+      }
+    }
     if (digitCount(seconds) > 1) {
       timeRemaining = `${minutes}:${seconds}`;
     } else {
       timeRemaining = `${minutes}:0${seconds}`;
     }
-    if (distance < 0) {
-      clearInterval(countDown);
-      rescued = true;
-    }
+    isRescued();
   }, 1000);
   animateA(gameState0);
-
   function makeItCloudy() {
     for (let i = 0; i < 500; i++) {
       rainArray[i] = new RainDrop((Math.random() * 3), (Math.random() * CW), Math.random() * CH, Math.round(Math.random() * 10 + 1));
     }
   }
-
-  function addToInventory(gameState0) {
-    const { toolTipText } = mouse;
-    const { rain, campfire, shelter } = environment;
+  function addToInventory() {
+    const { campfire, shelter } = environment;
     switch (mouse.toolTipText) {
       case 'Gather Firewood +5 Sticks':
         player0.addSticks(5);
@@ -110,14 +114,13 @@ function main() {
       default:
         break;
     }
-    function campFireToTrue(campfire) {
+    function campFireToTrue() {
       environment.campfire = true;
     }
-    function shelterToTrue(shelter) {
+    function shelterToTrue() {
       environment.shelter = true;
     }
   }
-
   // Animation Loop
   function animateA(gameState0) {
     const bg = new Image();
@@ -138,19 +141,8 @@ function main() {
     TENT_ICON.src = 'data/sprites/tent_icon.png';
     const RAIN_DROP = new Image();
     RAIN_DROP.src = 'data/sprites/raindrop.png';
-
-    const {
-      frameCounter, frameX, frameY, time,
-    } = animState0;
-    const { hunger, sticks, logs } = player0;
-    const { x, y, toolTipText } = mouse;
-    const {
-      rain, campfire, shelter, rainArray,
-    } = environment;
-    window.addEventListener('resize', () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    });
+    const { frameX } = animState0;
+    const { rain, campfire, shelter } = environment;
     window.addEventListener('mousemove',
       (event) => {
         mouse.x = event.x;
@@ -159,7 +151,6 @@ function main() {
     const now = Date.now();
     const delta = now - animState0.time;
     animState0.time = now;
-
     // update
     mouse.toolTipText = tTHelp();
     const ANIM_SPEED = 5;
@@ -172,7 +163,6 @@ function main() {
         animateA(gameState0);
       });
     } else if (player0.hunger > 0 && rescued == false) {
-      // Draw phase
       screenRefresh();
       UI(player0, timeRemaining, initialHealth);
       campfireAnim();
@@ -184,7 +174,6 @@ function main() {
       renderIcons(environment.rain, environment.campfire, environment.shelter);
       greySquareFunction(mouse.x, mouse.y);
       toolTip(mouse.x - 100, mouse.y + 20, 250, 50, mouse.toolTipText);
-      // End Phase
       frameXTicker();
       animState0.frameCounter++;
 
@@ -193,8 +182,7 @@ function main() {
       });
     } else {
       requestAnimationFrame(animateB);
-    }
-
+    } 
     // advance y position and draw each drop
     function makeItRain(rainArray) {
       rainArray.map((rainArray) => {
@@ -302,7 +290,6 @@ function main() {
       textMsg('Shelter and fire will counter the rain.', '30px Arial', 'lightgrey', CW * 0.3, CH * 0.7);
       textMsg('Then hunt until help arrives.', '30px Arial', 'lightgrey', CW * 0.3, CH * 0.75);
     }
-
     // produce a rectangle that follows mouse and displays information
     function toolTip(x, y, long, tall, text) {
       c.fillStyle = 'white';
@@ -311,7 +298,6 @@ function main() {
       c.fillStyle = 'black';
       c.fillText(text, x + 5, y + 25);
     }
-
     // Tooltip Helper
     function tTHelp() {
       if ((mouse.x > CW * 0.4 && mouse.x < CW * 0.8) && mouse.y < CH * 0.4) {
@@ -332,10 +318,8 @@ function main() {
       if ((mouse.x > CW * 0.82 && mouse.x < CW * 0.95) && (mouse.y > CH * 0.65 && mouse.y < CH * 0.73)) {
         return 'Shelter -20 Logs';
       }
-
       return 'Welcome To Lumberdome!';
     }
-
     // highlights the quadrant player is hovering over
     function greySquareFunction(x, y) {
       const alpha = 0.3;
@@ -352,14 +336,11 @@ function main() {
     }
   }
 }
-
 main();
-
 function tickHelper(player0, rate) {
   const end = 0;
   if (player0.hunger > end) { player0.tick(rate); }
 }
-
 // adds 0 to seconds when below 10
 function digitCount(n) {
   let count = 0;
@@ -371,13 +352,11 @@ function digitCount(n) {
   }
   return count;
 }
-
 function UI(player, time, initialHealth) {
   rescueBar(time);
   healthBar(player, initialHealth);
   quadrantLines();
   inventoryBar(player);
-
   // health bar object
   function healthBar(player0, initialHealth) {
     // inside
@@ -387,7 +366,6 @@ function UI(player, time, initialHealth) {
     c.fillRect(0, CH * 0.8, (CW * 0.4) * (player0.hunger / initialHealth), CH);
     textMsg('Health Remaining:', '24px Arial', 'black', CW * 0.01, CH * 0.9);
     textMsg(`${oneCent(player0.hunger)}/100`, '30px Arial', 'black', CW * 0.2, CH * 0.9);
-
     // outline
     // TODO make strokeRect instead!
     c.beginPath();
@@ -442,14 +420,12 @@ function UI(player, time, initialHealth) {
     c.stroke();
   }
 }
-
 // text message template
 function textMsg(text, fontMsg, textColor, textX, textY) {
   c.font = fontMsg;
   c.fillStyle = textColor;
   c.fillText(text, textX, textY);
 }
-
 // TODO
 // replace with more arithmetic than conditions
 function hungerRateFunction(environment) {
